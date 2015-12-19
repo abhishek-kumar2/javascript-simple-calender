@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html>
+    <head lang="en">
+        <meta charset="UTF-8">
+        <title></title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" />
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    </head>
+    <body>
+    <div class="container">
+    <div class="row">
+        <div class="col-md-6">
+            <table class="table table-bordered calHead">
+                <thead>
+                    <tr>
+                        <th width="20%"><button type="button" class="btn btn-default" id="last"><span class="glyphicon glyphicon-chevron-left"></span></button></th>
+                        <th width="60%" class="textAlignCenter"><label id="monthName"></label></th>
+                        <th width="20%"><button type="button" class="btn btn-default pull-right" id="next"><span class="glyphicon glyphicon-chevron-right"></span></button></th>
+                    </tr>
+                </thead>
+            </table>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th width="14%">Sun</th> <th width="14%">Mon</th> <th width="14%">Tus</th> <th width="14%">Wed</th> <th width="14%">Thu</th> <th width="14%">Fri</th> <th width="14%">Sat</th>
+                </tr>
+            </thead>
+            <tbody id="calDays">
+
+            </tbody>
+        </table>
+        </div>
+    </div>
+    </div>
+    <script>
+        var CalDatesArrangement = function(){
+            this.firstBlockValue = 1;
+            this.currentMonthBlockNum = 1;
+            this.lastMonthDays = '';
+            this.currentMonthDays = 30;
+            this.numberOfRows = 6;
+            this.numberOfColumns = 7;
+            this.fedC = "fedC";
+            this.row = "";
+            this.jVal;// = this.lastMonthDays;
+
+            this.calHtml = function(){
+                for(var i=0,j=this.firstBlockValue; i<6; i++) {
+                    this.row += "<tr class='blockH'>";
+                    for (var k = 0; k < this.numberOfColumns; k++, j++) {
+                        this.row += "<td><span class='pull-left " + this.fedC + "'>" + j + "</span></td>";
+                        if(j==this.jVal){ console.log( this.jVal);
+                            j=0;
+                            if(this.fedC != "")
+                                this.fedC="";
+                            else
+                                this.fedC = "fedC";
+
+                            this.jVal = this.currentMonthDays;
+                        }
+                    }
+                    this.row += "</tr>";
+                }
+                return this.row;
+            }
+        }
+
+        var buildCal = function(Y, M) {
+            Date.prototype.addDays = function (days) {
+                this.setDate(this.getDate() + parseInt(days));
+                return this;
+            };
+
+            var currentDate = new Date(Y, M, 1);
+            var monthNum = currentDate.getMonth();
+            var yearNum = currentDate.getFullYear();
+            var currentDateDay = currentDate.getDate();
+            var lastDayOfLastMonth = currentDate.addDays(-currentDateDay);
+            var firstDayOfMonth = lastDayOfLastMonth.getDay() + 1;
+            var startBlockNum = lastDayOfLastMonth.getDate() - firstDayOfMonth;
+            var lastDay = new Date(currentDate.getYear(), currentDate.getMonth() + 2, 0);
+
+            calDatesArrangement = new CalDatesArrangement();
+
+            calDatesArrangement.firstBlockValue = lastDayOfLastMonth.getDate() - currentDate.getDay();
+            calDatesArrangement.jVal = lastDayOfLastMonth.getDate();
+            calDatesArrangement.currentMonthDays = new Date(currentDate.getYear(), currentDate.getMonth() + 2, 0).getDate();
+
+            $('#calDays').html(calDatesArrangement.calHtml());
+            var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            $('#monthName').html(monthNames[monthNum] + ', ' + yearNum);
+        };
+
+        $(document).ready(function(){
+            var Y = new Date().getFullYear();
+            var M = new Date().getMonth();
+            buildCal(Y, M);
+
+            $("#next").click(function(){
+                buildCal(Y, M+=1);
+            });
+
+            $("#last").click(function(){
+                buildCal(Y, M-=1);
+            });
+        });
+
+    </script>
+
+    <style>
+        .blockH {
+            height: 84px;
+        }
+        .fedC {
+            color: #827e7d;
+        }
+        .textAlignCenter {
+            text-align: center
+        }
+        .calHead {
+            margin-bottom: 1px;
+        }
+    </style>
+    </body>
+</html>
